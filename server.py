@@ -15,7 +15,7 @@ class crud:
     def consultar(self):
         try:
             cursor = self.conexion.cursor(dictionary=True)
-            sql = "SELECT * FROM alumnos"
+            sql = "SELECT alumnos.idAlumno, alumnos.codigo, alumnos.nombre, alumnos.telefono FROM alumnos LIMIT 6,10"
             cursor.execute(sql)
             resultado = cursor.fetchall()
             return resultado
@@ -55,12 +55,15 @@ class servidorBasico(SimpleHTTPRequestHandler):
         if self.path == '/':
             self.path = '/index.html'
             return SimpleHTTPRequestHandler.do_GET(self)
-
-        if self.path == '/consultar':
+        
+        elif self.path == '/consultar':
             resp = crud.consultar()
             self.send_response(200)
             self.end_headers()
             self.wfile.write(json.dumps(dict(resp=resp)).encode('utf-8'))
+        
+        else:
+            return SimpleHTTPRequestHandler.do_GET(self)
 
     def do_POST(self):
         if self.path == '/insertar':
